@@ -1,4 +1,4 @@
-package dataandpersistency;
+package dataandpersistency.P1;
 
 import static org.junit.Assert.assertTrue;
 
