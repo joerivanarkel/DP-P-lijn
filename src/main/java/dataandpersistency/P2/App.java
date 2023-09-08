@@ -49,12 +49,37 @@ public class App {
         System.out.println();
 
         // Maak een nieuwe reiziger aan en persisteer deze in de database
+        int id = rdao.findAll().size() + 1;
+
         String gbdatum = "1981-03-14";
-        Reiziger sietske = new Reiziger(77, "S", "", "Boers", java.sql.Date.valueOf(gbdatum));
+        Reiziger sietske = new Reiziger(id, "S", "", "Boers", java.sql.Date.valueOf(gbdatum));
         System.out.print("[Test] Eerst " + reizigers.size() + " reizigers, na ReizigerDAO.save() ");
         rdao.save(sietske);
         reizigers = rdao.findAll();
         System.out.println(reizigers.size() + " reizigers\n");
 
+        // Update de nieuwe reiziger
+        System.out.println("[Test] ReizigerDAO.update() geeft de volgende reiziger:");
+        sietske.setTussenvoegsel("van");
+        sietske.setAchternaam("Dijk");
+        rdao.update(sietske);
+        System.out.println(rdao.findById(sietske.getId()) + "\n");
+
+        // Delete de nieuwe reiziger
+        System.out.print("[Test] Eerst " + reizigers.size() + " reizigers, na ReizigerDAO.delete() ");
+        rdao.delete(sietske);
+        reizigers = rdao.findAll();
+        System.out.println(reizigers.size() + " reizigers\n");
+
+        // Haal alle reiziger 2 op uit de database
+        System.out.println("[Test] ReizigerDAO.findById() geeft de volgende reiziger:");
+        System.out.println(rdao.findById(2) + "\n");
+
+        // Haal alle reizigers op met geboortedatum 2002-12-03 uit de database
+        System.out.println("[Test] ReizigerDAO.findByGbdatum() geeft de volgende reizigers:");
+        for (Reiziger r : rdao.findByGbdatum("2002-12-03")) {
+            System.out.println(r);
+        }
+        System.out.println();
     }
 }

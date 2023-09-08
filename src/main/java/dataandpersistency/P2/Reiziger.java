@@ -44,6 +44,22 @@ public class Reiziger {
     public void setId(int id) {
         this.id = id;
     }    
+
+    public void setVoorletters(String voorletters) {
+        this.voorletters = voorletters;
+    }
+
+    public void setTussenvoegsel(String tussenvoegsel) {
+        this.tussenvoegsel = tussenvoegsel;
+    }
+
+    public void setAchternaam(String achternaam) {
+        this.achternaam = achternaam;
+    }
+
+    public void setGeboortedatum(Date geboortedatum) {
+        this.geboortedatum = geboortedatum;
+    }
     
     public String getNaam() {
         StringBuilder stringBuilder = new StringBuilder();
