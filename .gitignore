@@ -33,3 +33,5 @@ bin/
 
 ### Maven ###
 target/
+
+*.zip
