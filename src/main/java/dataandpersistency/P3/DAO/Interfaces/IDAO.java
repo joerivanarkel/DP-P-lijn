@@ -1,4 +1,4 @@
-package dataandpersistency.P3.DAO;
+package dataandpersistency.P3.DAO.Interfaces;
 
 import java.util.List;
 

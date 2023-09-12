@@ -1,5 +1,6 @@
 package dataandpersistency.P3.DAO;
 
+import dataandpersistency.P3.DAO.Interfaces.IAdresDAO;
 import dataandpersistency.P3.Models.Adres;
 import dataandpersistency.P3.Models.Reiziger;
 
@@ -17,24 +18,36 @@ public class AdresDAOPsql implements IAdresDAO {
     @Override
     public boolean save(Adres adres) {
         try {
-            try (ResultSet resultSet = conn.createStatement()
-                .executeQuery(
-                    "INSERT INTO adres VALUES (" + 
-                    adres.getId() + 
-                    ", '" + 
-                    adres.getPostcode() + 
-                    "', '" + 
-                    adres.getHuisnummer() + 
-                    "', '" + 
-                    adres.getStraat() + 
-                    "', '" + 
-                    adres.getWoonplaats() + 
-                    "', '" + 
-                    adres.getReiziger_id() +
-                    "')"
-                )) {
-                return true;
-            }
+            PreparedStatement preparedStatement = conn.prepareStatement(
+                "INSERT INTO adres VALUES (?, ?, ?, ?, ?, ?)"
+            );
+            preparedStatement.setInt(1, adres.getId());
+            preparedStatement.setString(2, adres.getPostcode());
+            preparedStatement.setString(3, adres.getHuisnummer());
+            preparedStatement.setString(4, adres.getStraat());
+            preparedStatement.setString(5, adres.getWoonplaats());
+            preparedStatement.setInt(6, adres.getReiziger_id());
+            preparedStatement.executeUpdate();
+            return true;
+            
+//            try (ResultSet resultSet = conn.createStatement()
+//                .executeQuery(
+//                    "INSERT INTO adres VALUES (" + 
+//                    adres.getId() + 
+//                    ", '" + 
+//                    adres.getPostcode() + 
+//                    "', '" + 
+//                    adres.getHuisnummer() + 
+//                    "', '" + 
+//                    adres.getStraat() + 
+//                    "', '" + 
+//                    adres.getWoonplaats() + 
+//                    "', '" + 
+//                    adres.getReiziger_id() +
+//                    "')"
+//                )) {
+//                return true;
+//            }
                 
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -103,6 +116,18 @@ public class AdresDAOPsql implements IAdresDAO {
     
     public boolean checkIfExists(Adres adres) {
         try {
+            PreparedStatement preparedStatement = conn.prepareStatement(
+                "SELECT * FROM adres WHERE adres_id = ?"
+            );
+            preparedStatement.setInt(1, adres.getId());
+            preparedStatement.executeQuery();
+            
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) { // If there is a next, the resultset is not empty
+                    return true;
+                }
+            }
+            
             try (ResultSet resultSet = conn.createStatement()
                 .executeQuery(
                     "SELECT * FROM adres WHERE adres_id = " + 
