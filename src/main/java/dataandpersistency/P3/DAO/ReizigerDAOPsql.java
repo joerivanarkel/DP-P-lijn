@@ -1,6 +1,8 @@
 package dataandpersistency.P3.DAO;
 
+import dataandpersistency.P3.DAO.Interfaces.IAdresDAO;
 import dataandpersistency.P3.DAO.Interfaces.IReizigerDAO;
+import dataandpersistency.P3.Models.Adres;
 import dataandpersistency.P3.Models.Reiziger;
 
 import java.sql.Connection;
@@ -11,9 +13,11 @@ import java.util.ArrayList;
 
 public class ReizigerDAOPsql implements IReizigerDAO {
     private Connection connection;
+    private IAdresDAO adao;
 
-    public ReizigerDAOPsql(Connection connection) {
+    public ReizigerDAOPsql(Connection connection, IAdresDAO adresDAOPsql) {
         this.connection = connection;
+        this.adao = adresDAOPsql;
     }
 
     @Override
@@ -88,6 +92,7 @@ public class ReizigerDAOPsql implements IReizigerDAO {
                         resultSet.getString("achternaam"),
                         resultSet.getDate("geboortedatum")
                     );
+                    reiziger.setAdres(getAdres(reiziger));
                     return reiziger;
                 }
             }
@@ -117,6 +122,7 @@ public class ReizigerDAOPsql implements IReizigerDAO {
                         resultSet.getString("achternaam"),
                         resultSet.getDate("geboortedatum")
                     );
+                    reiziger.setAdres(getAdres(reiziger));
                     reizigers.add(reiziger);
                 }
             }
@@ -146,6 +152,7 @@ public class ReizigerDAOPsql implements IReizigerDAO {
                         resultSet.getString("achternaam"),
                         resultSet.getDate("geboortedatum")
                     );
+                    reiziger.setAdres(getAdres(reiziger));
                     reizigers.add(reiziger);
                 }
             }
@@ -170,6 +177,10 @@ public class ReizigerDAOPsql implements IReizigerDAO {
         }
 
         return false;
+    }
+
+    private Adres getAdres(Reiziger reiziger) {
+        return adao.findByReiziger(reiziger);
     }
     
 }

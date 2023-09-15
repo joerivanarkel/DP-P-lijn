@@ -8,18 +8,31 @@ public class Reiziger {
     private String tussenvoegsel;
     private String achternaam;
     private Date geboortedatum;
+    private Adres adres;
     
     public Reiziger() {
         
     }
-    
+
     public Reiziger(int id, String voorletters, String tussenvoegsel, String achternaam, Date geboortedatum) {
         this.id = id;
         this.voorletters = voorletters;
         this.tussenvoegsel = tussenvoegsel;
         this.achternaam = achternaam;
         this.geboortedatum = geboortedatum;
+        this.adres = adres;
     }
+    
+    public Reiziger(int id, String voorletters, String tussenvoegsel, String achternaam, Date geboortedatum, Adres adres) {
+        this.id = id;
+        this.voorletters = voorletters;
+        this.tussenvoegsel = tussenvoegsel;
+        this.achternaam = achternaam;
+        this.geboortedatum = geboortedatum;
+        this.adres = adres;
+    }
+
+
     
     public int getId() {
         return id;
@@ -39,6 +52,10 @@ public class Reiziger {
     
     public Date getGeboortedatum() {
         return geboortedatum;
+    }
+
+    public Adres getAdres() {
+        return adres;
     }
     
     public void setId(int id) {
@@ -60,6 +77,10 @@ public class Reiziger {
     public void setGeboortedatum(Date geboortedatum) {
         this.geboortedatum = geboortedatum;
     }
+
+    public void setAdres(Adres adres) {
+        this.adres = adres;
+    }
     
     public String getNaam() {
         StringBuilder stringBuilder = new StringBuilder();
@@ -79,7 +100,8 @@ public class Reiziger {
         stringBuilder.append(getNaam());
         stringBuilder.append(" (");
         stringBuilder.append(geboortedatum);
-        stringBuilder.append(")");
+        stringBuilder.append("), ");
+        stringBuilder.append(adres != null ? adres.toString() : "geen adres");
         return stringBuilder.toString();
     }
     

@@ -37,6 +37,6 @@ public class Adres {
     
     @Override
     public String toString() {
-        return "Adres #" + id + " " + postcode + " " + huisnummer + " " + straat + " " + woonplaats + " " + reiziger_id;
+        return "Adres {#" + id + " " + postcode + " " + huisnummer + " " + straat + " " + woonplaats + " " + reiziger_id + "}";
     }
 }
