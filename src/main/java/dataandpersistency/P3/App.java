@@ -18,8 +18,12 @@ public class App {
     public static void main(String[] args) {
         App app = new App();
         app.connection = app.getConnection();
-//        app.testReizigerDAO(new ReizigerDAOPsql(app.connection));
-        app.testAdresDAO(new AdresDAOPsql(app.connection));
+        
+        ReizigerDAOPsql rdao = new ReizigerDAOPsql(app.connection);
+        AdresDAOPsql adao = new AdresDAOPsql(app.connection);
+        
+//        app.testReizigerDAO(rdao);
+        app.testAdresDAO(adao, rdao);
         app.closeConnection();
     }
     
@@ -90,7 +94,7 @@ public class App {
         System.out.println();
     }
     
-    public void testAdresDAO(AdresDAOPsql adao) {
+    public void testAdresDAO(AdresDAOPsql adao, ReizigerDAOPsql rdao) {
         System.out.println("\n---------- Test AdresDAO -------------");
         
         // Haal alle adressen op uit de database
@@ -99,6 +103,39 @@ public class App {
         for (Adres a : adressen) {
             System.out.println(a);
         }
+        
+        // Maak een nieuw adres aan en persisteer deze in de database
+        int id = adao.findAll().size() + 1;
+        Adres adres = new Adres(id, "1234AB", "1", "Straat", "Woonplaats", 1);
+        System.out.print("[Test] Eerst " + adressen.size() + " adressen, na AdresDAO.save() ");
+        adao.save(adres);
+        adressen = adao.findAll();
+        System.out.println(adressen.size() + " adressen\n");
+        
+        // Update het nieuwe adres
+        System.out.println("[Test] AdresDAO.update() geeft het volgende adres:");
+        adres.setHuisnummer("2");
+        adres.setStraat("Straatje");
+        adres.setWoonplaats("Woonplaatsje");
+        adao.update(adres);
+        System.out.println(adao.findById(adres.getId()) + "\n");
+        
+        // Delete het nieuwe adres
+        System.out.print("[Test] Eerst " + adressen.size() + " adressen, na AdresDAO.delete() ");
+        adao.delete(adres);
+        adressen = adao.findAll();
+        System.out.println(adressen.size() + " adressen\n");
+        
+        // Haal alle adressen op met reiziger_id 1 uit de database
+        System.out.println("[Test] AdresDAO.findByReizigerId() geeft de volgende adressen:");
+        System.out.println(adao.findByReiziger(rdao.findById(1)));
+        System.out.println();
+        
+        // Haal alle adressen op met reiziger_id 1 uit de database
+        System.out.println("[Test] AdresDAO.findById() geeft het volgende adres:");
+        System.out.println(adao.findById(1) + "\n");
+        
+        
         
     }
 }

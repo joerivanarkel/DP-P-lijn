@@ -17,6 +17,8 @@ public class AdresDAOPsql implements IAdresDAO {
     
     @Override
     public boolean save(Adres adres) {
+        if (!checkIfExists(adres)) return false;
+        
         try {
             PreparedStatement preparedStatement = conn.prepareStatement(
                 "INSERT INTO adres VALUES (?, ?, ?, ?, ?, ?)"
@@ -29,25 +31,6 @@ public class AdresDAOPsql implements IAdresDAO {
             preparedStatement.setInt(6, adres.getReiziger_id());
             preparedStatement.executeUpdate();
             return true;
-            
-//            try (ResultSet resultSet = conn.createStatement()
-//                .executeQuery(
-//                    "INSERT INTO adres VALUES (" + 
-//                    adres.getId() + 
-//                    ", '" + 
-//                    adres.getPostcode() + 
-//                    "', '" + 
-//                    adres.getHuisnummer() + 
-//                    "', '" + 
-//                    adres.getStraat() + 
-//                    "', '" + 
-//                    adres.getWoonplaats() + 
-//                    "', '" + 
-//                    adres.getReiziger_id() +
-//                    "')"
-//                )) {
-//                return true;
-//            }
                 
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -58,7 +41,19 @@ public class AdresDAOPsql implements IAdresDAO {
     @Override
     public boolean update(Adres adres) {
         try {
-            return false;
+            if (!checkIfExists(adres)) return false;
+            
+            PreparedStatement preparedStatement = conn.prepareStatement(
+                "UPDATE adres SET postcode = ?, huisnummer = ?, straat = ?, woonplaats = ?, reiziger_id = ? WHERE adres_id = ?"
+            );
+            preparedStatement.setString(1, adres.getPostcode());
+            preparedStatement.setString(2, adres.getHuisnummer());
+            preparedStatement.setString(3, adres.getStraat());
+            preparedStatement.setString(4, adres.getWoonplaats());
+            preparedStatement.setInt(5, adres.getReiziger_id());
+            preparedStatement.setInt(6, adres.getId());
+            preparedStatement.executeUpdate();
+            return true;
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return false;
@@ -68,7 +63,14 @@ public class AdresDAOPsql implements IAdresDAO {
     @Override
     public boolean delete(Adres adres) {
         try {
-            return false;
+            if (!checkIfExists(adres)) return false;
+            
+            PreparedStatement preparedStatement = conn.prepareStatement(
+                "DELETE FROM adres WHERE adres_id = ?"
+            );
+            preparedStatement.setInt(1, adres.getId());
+            preparedStatement.executeUpdate();
+            return true;
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return false;
@@ -78,7 +80,25 @@ public class AdresDAOPsql implements IAdresDAO {
     @Override
     public Adres findByReiziger(Reiziger reiziger) {
         try {
-            return new Adres();
+            PreparedStatement preparedStatement = conn.prepareStatement(
+                "SELECT * FROM adres WHERE reiziger_id = ?"
+            );
+            preparedStatement.setInt(1, reiziger.getId());
+            preparedStatement.executeQuery();
+            
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) { // If there is a next, the resultset is not empty
+                    return new Adres(
+                        resultSet.getInt("adres_id"),
+                        resultSet.getString("postcode"),
+                        resultSet.getString("huisnummer"),
+                        resultSet.getString("straat"),
+                        resultSet.getString("woonplaats"),
+                        resultSet.getInt("reiziger_id")
+                    );
+                }
+            }
+            return null;
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;
@@ -114,7 +134,34 @@ public class AdresDAOPsql implements IAdresDAO {
         }
     }
     
-    public boolean checkIfExists(Adres adres) {
+    public Adres findById(int id) {
+        try {
+            PreparedStatement preparedStatement = conn.prepareStatement(
+                "SELECT * FROM adres WHERE adres_id = ?"
+            );
+            preparedStatement.setInt(1, id);
+            preparedStatement.executeQuery();
+            
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) { // If there is a next, the resultset is not empty
+                    return new Adres(
+                        resultSet.getInt("adres_id"),
+                        resultSet.getString("postcode"),
+                        resultSet.getString("huisnummer"),
+                        resultSet.getString("straat"),
+                        resultSet.getString("woonplaats"),
+                        resultSet.getInt("reiziger_id")
+                    );
+                }
+            }
+            return null;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+    
+    private boolean checkIfExists(Adres adres) {
         try {
             PreparedStatement preparedStatement = conn.prepareStatement(
                 "SELECT * FROM adres WHERE adres_id = ?"
@@ -123,16 +170,6 @@ public class AdresDAOPsql implements IAdresDAO {
             preparedStatement.executeQuery();
             
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) { // If there is a next, the resultset is not empty
-                    return true;
-                }
-            }
-            
-            try (ResultSet resultSet = conn.createStatement()
-                .executeQuery(
-                    "SELECT * FROM adres WHERE adres_id = " + 
-                    adres.getId()
-                )) {
                 if (resultSet.next()) { // If there is a next, the resultset is not empty
                     return true;
                 }
