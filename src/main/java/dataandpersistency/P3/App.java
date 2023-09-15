@@ -20,10 +20,10 @@ public class App {
         app.connection = app.getConnection();
 
         AdresDAOPsql adao = new AdresDAOPsql(app.connection);
-        ReizigerDAOPsql rdao = new ReizigerDAOPsql(app.connection, adao);
+        ReizigerDAOPsql rdao = new ReizigerDAOPsql(app.connection);
 
         app.testReizigerDAO(rdao);
-        app.testAdresDAO(adao, rdao);
+        app.testAdresDAO(adao);
         app.closeConnection();
     }
 
@@ -93,8 +93,9 @@ public class App {
         System.out.println();
     }
 
-    public void testAdresDAO(AdresDAOPsql adao, ReizigerDAOPsql rdao) {
+    public void testAdresDAO(AdresDAOPsql adao) {
         System.out.println("\n---------- Test AdresDAO -------------");
+        ReizigerDAOPsql rdao = new ReizigerDAOPsql(connection);
 
         int reizigerId = rdao.findAll().size() + 1;
         String gbdatum = "1981-03-14";

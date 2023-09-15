@@ -10,9 +10,18 @@ import java.util.List;
 
 public class AdresDAOPsql implements IAdresDAO {
     private Connection conn;
+    private ReizigerDAOPsql rdao;
     
     public AdresDAOPsql(Connection conn) {
         this.conn = conn;
+    }
+
+    public void setRdao(ReizigerDAOPsql rdao) {
+        this.rdao = rdao;
+    }
+
+    public ReizigerDAOPsql getRdao() {
+        return rdao;
     }
     
     @Override
