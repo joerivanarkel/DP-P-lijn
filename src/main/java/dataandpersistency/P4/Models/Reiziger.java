@@ -1,6 +1,7 @@
 package dataandpersistency.P4.Models;
 
 import java.sql.Date;
+import java.util.List;
 
 public class Reiziger {
     private int id;
@@ -8,7 +9,10 @@ public class Reiziger {
     private String tussenvoegsel;
     private String achternaam;
     private Date geboortedatum;
+
+    // Relaties
     private Adres adres;
+    private List<OVChipkaart> ovChipkaarten;
     
     public Reiziger() {
         
@@ -57,6 +61,10 @@ public class Reiziger {
         return adres;
     }
     
+    public List<OVChipkaart> getOVChipkaarten() {
+        return ovChipkaarten;
+    }
+    
     public void setId(int id) {
         this.id = id;
     }    
@@ -79,6 +87,16 @@ public class Reiziger {
 
     public void setAdres(Adres adres) {
         this.adres = adres;
+    }
+
+    public void setOvChipkaarten(List<OVChipkaart> ovChipkaarten) {
+        this.ovChipkaarten = ovChipkaarten;
+    }
+
+
+
+    public void addOVChipkaart(OVChipkaart ovChipkaart) {
+        ovChipkaarten.add(ovChipkaart);
     }
     
     public String getNaam() {

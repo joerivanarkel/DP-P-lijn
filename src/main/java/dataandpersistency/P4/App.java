@@ -1,6 +1,7 @@
 package dataandpersistency.P4;
 
 import dataandpersistency.P4.DAO.AdresDAOPsql;
+import dataandpersistency.P4.DAO.OVChipkaartDAOPsql;
 import dataandpersistency.P4.DAO.ReizigerDAOPsql;
 import dataandpersistency.P4.Models.Adres;
 import dataandpersistency.P4.Models.Reiziger;
@@ -9,7 +10,6 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -22,10 +22,17 @@ public class App {
 
         AdresDAOPsql adao = new AdresDAOPsql(app.getConnection(app.connection));
         ReizigerDAOPsql rdao = new ReizigerDAOPsql(app.getConnection(app.connection));
+        OVChipkaartDAOPsql odao = new OVChipkaartDAOPsql(app.getConnection(app.connection));
+
+        adao.setRdao(rdao);
+        rdao.setAdao(adao);
+
+        rdao.setOdao(odao);
+        odao.setRdao(rdao);
 
         app.testReizigerDAO(rdao);
         app.testAdresDAO(adao);
-        app.closeConnection();
+        app.connection.close();
     }
 
     public Connection getConnection(Connection connection) throws SQLException {
@@ -36,14 +43,6 @@ public class App {
         props.setProperty("useSSL", "true");
         connection =  DriverManager.getConnection("jdbc:postgresql://localhost/ovchip", props);
         return connection;
-    }
-
-    public void closeConnection() {
-        try {
-            connection.close();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
     }
 
     public void testReizigerDAO(ReizigerDAOPsql rdao) throws SQLException {
@@ -139,5 +138,12 @@ public class App {
         System.out.println("[Test] AdresDAO.findById() geeft het volgende adres:");
         System.out.println(adao.findById(1) + "\n");
 
+    }
+
+    public void testOVChipkaart(OVChipkaartDAOPsql ovChipkaartDAOPsql) throws SQLException
+    {
+        System.out.println("\n---------- Test OVChipkaartDAO -------------");
+        ReizigerDAOPsql rdao = new ReizigerDAOPsql(connection);
+        AdresDAOPsql adao = new AdresDAOPsql(connection);
     }
 }

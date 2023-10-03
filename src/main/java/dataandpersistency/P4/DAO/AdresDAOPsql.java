@@ -138,7 +138,6 @@ public class AdresDAOPsql implements IAdresDAO {
             "SELECT * FROM adres WHERE adres_id = ?"
         );
         preparedStatement.setInt(1, id);
-        preparedStatement.executeQuery();
         
         try (ResultSet resultSet = preparedStatement.executeQuery()) {
             if (resultSet.next()) { // If there is a next, the resultset is not empty

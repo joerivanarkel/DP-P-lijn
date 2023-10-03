@@ -1,6 +1,7 @@
 package dataandpersistency.P4.DAO;
 
 import dataandpersistency.P4.DAO.Interfaces.IAdresDAO;
+import dataandpersistency.P4.DAO.Interfaces.IOVChipkaartDAO;
 import dataandpersistency.P4.DAO.Interfaces.IReizigerDAO;
 import dataandpersistency.P4.Models.Adres;
 import dataandpersistency.P4.Models.Reiziger;
@@ -14,19 +15,19 @@ import java.util.List;
 
 public class ReizigerDAOPsql implements IReizigerDAO {
     private Connection connection;
+
     private IAdresDAO adao;
+    private IOVChipkaartDAO odao;
 
     public ReizigerDAOPsql(Connection connection) {
         this.connection = connection;
     }
 
-    public void setAdao(IAdresDAO adao) {
-        this.adao = adao;
-    }
+    public void setAdao(IAdresDAO adao) { this.adao = adao; }
+    public void setOdao(IOVChipkaartDAO odao) { this.odao = odao; }
 
-    public IAdresDAO getAdao() {
-        return adao;
-    }
+    public IAdresDAO getAdao() { return adao; }
+    public IOVChipkaartDAO getOdao() { return odao; }
 
     @Override
     public boolean save(Reiziger reiziger) throws SQLException {
@@ -44,6 +45,7 @@ public class ReizigerDAOPsql implements IReizigerDAO {
             preparedStatement.executeUpdate();
 
             adao.save(reiziger.getAdres());
+            odao.save(reiziger.getOVChipkaarten());
 
             connection.commit();
             connection.setAutoCommit(true);
@@ -72,6 +74,7 @@ public class ReizigerDAOPsql implements IReizigerDAO {
             preparedStatement.executeUpdate();
 
             adao.update(reiziger.getAdres());
+            odao.update(reiziger.getOVChipkaarten());
 
             connection.commit();
             connection.setAutoCommit(true);
