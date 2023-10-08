@@ -33,4 +33,8 @@ public class OVChipkaart {
     public void setSaldo(double saldo) { this.saldo = saldo; }
     public void setReiziger_id(int reiziger_id) { this.reiziger_id = reiziger_id; }
 
+    @Override
+    public String toString() {
+        return "OVChipkaart {#" + kaart_nummer + " " + geldig_tot + " " + klasse + " " + saldo + " " + reiziger_id + "}";
+    }
 }

@@ -113,10 +113,11 @@ public class AdresDAOPsql implements IAdresDAO {
     public List<Adres> findAll() throws SQLException {
         List<Adres> adressen = new ArrayList<>();
 
-        try (ResultSet resultSet = conn.createStatement()
-            .executeQuery(
-                "SELECT * FROM adres"
-            )) {
+        PreparedStatement preparedStatement = conn.prepareStatement(
+            "SELECT * FROM adres"
+        );
+
+        try (ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {
                 adressen.add(
                     new Adres(

@@ -1,6 +1,7 @@
 package dataandpersistency.P4.Models;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Reiziger {
@@ -12,7 +13,7 @@ public class Reiziger {
 
     // Relaties
     private Adres adres;
-    private List<OVChipkaart> ovChipkaarten;
+    private List<OVChipkaart> ovChipkaarten = new ArrayList<OVChipkaart>();
     
     public Reiziger() {
         
@@ -119,6 +120,11 @@ public class Reiziger {
         stringBuilder.append(geboortedatum);
         stringBuilder.append("), ");
         stringBuilder.append(adres != null ? adres.toString() : "geen adres");
+        stringBuilder.append(", ");
+        for (OVChipkaart ovChipkaart : ovChipkaarten) {
+            stringBuilder.append(ovChipkaart.toString());
+            stringBuilder.append(", ");
+        }
         return stringBuilder.toString();
     }
     

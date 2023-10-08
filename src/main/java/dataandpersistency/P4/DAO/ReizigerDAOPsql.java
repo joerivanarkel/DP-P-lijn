@@ -4,9 +4,11 @@ import dataandpersistency.P4.DAO.Interfaces.IAdresDAO;
 import dataandpersistency.P4.DAO.Interfaces.IOVChipkaartDAO;
 import dataandpersistency.P4.DAO.Interfaces.IReizigerDAO;
 import dataandpersistency.P4.Models.Adres;
+import dataandpersistency.P4.Models.OVChipkaart;
 import dataandpersistency.P4.Models.Reiziger;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -44,8 +46,11 @@ public class ReizigerDAOPsql implements IReizigerDAO {
             preparedStatement.setDate(5, reiziger.getGeboortedatum());
             preparedStatement.executeUpdate();
 
-            adao.save(reiziger.getAdres());
-            odao.save(reiziger.getOVChipkaarten());
+            if (reiziger.getAdres() != null) adao.save(reiziger.getAdres());
+            for (OVChipkaart ovChipkaart : reiziger.getOVChipkaarten()) {
+                odao.save(ovChipkaart);
+            }
+            // odao.save(reiziger.getOVChipkaarten());
 
             connection.commit();
             connection.setAutoCommit(true);
@@ -73,8 +78,11 @@ public class ReizigerDAOPsql implements IReizigerDAO {
             preparedStatement.setInt(5, reiziger.getId());
             preparedStatement.executeUpdate();
 
-            adao.update(reiziger.getAdres());
-            odao.update(reiziger.getOVChipkaarten());
+            if (reiziger.getAdres() != null) adao.update(reiziger.getAdres());
+            for(OVChipkaart ovChipkaart : reiziger.getOVChipkaarten()) {
+                odao.update(ovChipkaart);
+            }
+            // odao.update(reiziger.getOVChipkaarten());
 
             connection.commit();
             connection.setAutoCommit(true);
@@ -96,7 +104,7 @@ public class ReizigerDAOPsql implements IReizigerDAO {
         preparedStatement.setInt(1, reiziger.getId());
         preparedStatement.executeUpdate();
 
-        adao.delete(reiziger.getAdres());
+        if (reiziger.getAdres() != null) adao.delete(reiziger.getAdres());
         return true;
     }
 
@@ -130,7 +138,7 @@ public class ReizigerDAOPsql implements IReizigerDAO {
         PreparedStatement preparedStatement = connection.prepareStatement(
             "SELECT * FROM reiziger WHERE geboortedatum = ?"
         );
-        preparedStatement.setString(1, datum);
+        preparedStatement.setDate(1, Date.valueOf(datum));
 
         try (ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {

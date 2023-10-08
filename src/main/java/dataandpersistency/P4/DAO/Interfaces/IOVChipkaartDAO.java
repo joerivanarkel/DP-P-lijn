@@ -6,8 +6,6 @@ import java.util.List;
 import dataandpersistency.P4.Models.OVChipkaart;
 import dataandpersistency.P4.Models.Reiziger;
 
-public interface IOVChipkaartDAO {
+public interface IOVChipkaartDAO extends IDAO<OVChipkaart> {
     List<OVChipkaart> findByReiziger(Reiziger reiziger) throws SQLException;
-    boolean save(List<OVChipkaart> ovChipkaarten) throws SQLException;
-    boolean update(List<OVChipkaart> ovChipkaarten) throws SQLException;
 }
