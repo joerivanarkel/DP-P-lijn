@@ -49,7 +49,7 @@ public class AdresDAOPsql implements IAdresDAO {
 
     @Override
     public boolean update(Adres adres) throws SQLException {
-        if (checkIfExists(adres)) throw new IllegalArgumentException("Adres bestaat niet");
+        if (!checkIfExists(adres)) throw new IllegalArgumentException("Adres bestaat niet");
         try {
             conn.setAutoCommit(false);
             
@@ -156,17 +156,17 @@ public class AdresDAOPsql implements IAdresDAO {
     
     private boolean checkIfExists(Adres adres) {
         try {
-            // PreparedStatement preparedStatement = conn.prepareStatement(
-            //     "SELECT * FROM adres WHERE adres_id = ?"
-            // );
-            // preparedStatement.setInt(1, adres.getId());
-            // // preparedStatement.executeQuery();
+            PreparedStatement preparedStatement = conn.prepareStatement(
+                "SELECT * FROM adres WHERE adres_id = ?"
+            );
+            preparedStatement.setInt(1, adres.getId());
+            // preparedStatement.executeQuery();
             
-            // try (ResultSet resultSet = preparedStatement.executeQuery()) {
-            //     if (!resultSet.next()) { // If there is a next, the resultset is not empty
-            //         return true;
-            //     }
-            // }
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) { // If there is a next, the resultset is not empty
+                    return true;
+                }
+            }
             return false;
         } catch (Exception e) {
             System.out.println(e.getMessage());
