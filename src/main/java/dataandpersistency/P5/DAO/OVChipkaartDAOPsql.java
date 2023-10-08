@@ -7,9 +7,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import dataandpersistency.P4.DAO.Interfaces.IOVChipkaartDAO;
-import dataandpersistency.P4.Models.OVChipkaart;
-import dataandpersistency.P4.Models.Reiziger;
+import dataandpersistency.P5.DAO.Interfaces.IOVChipkaartDAO;
+import dataandpersistency.P5.Models.OVChipkaart;
+import dataandpersistency.P5.Models.Reiziger;
+import dataandpersistency.P5.Models.Product;
 
 public class OVChipkaartDAOPsql implements IOVChipkaartDAO {
     private Connection conn;
@@ -56,6 +57,15 @@ public class OVChipkaartDAOPsql implements IOVChipkaartDAO {
             preparedStatement.setInt(5, ovChipkaart.getReiziger_id());
             preparedStatement.executeUpdate();
 
+            for (Product product : ovChipkaart.getProducten()) {
+                PreparedStatement preparedStatement2 = conn.prepareStatement(
+                    "INSERT INTO ov_chipkaart_product VALUES (?, ?)"
+                );
+                preparedStatement2.setInt(1, ovChipkaart.getKaart_nummer());
+                preparedStatement2.setInt(2, product.getProduct_nummer());
+                preparedStatement2.executeUpdate();
+            }
+
             conn.commit();
 
             return true;
@@ -82,6 +92,15 @@ public class OVChipkaartDAOPsql implements IOVChipkaartDAO {
             preparedStatement.setInt(5, ovChipkaart.getKaart_nummer());
             preparedStatement.executeUpdate();
 
+            for (Product product : ovChipkaart.getProducten()) {
+                PreparedStatement preparedStatement2 = conn.prepareStatement(
+                    "INSERT INTO ov_chipkaart_product VALUES (?, ?)"
+                );
+                preparedStatement2.setInt(1, ovChipkaart.getKaart_nummer());
+                preparedStatement2.setInt(2, product.getProduct_nummer());
+                preparedStatement2.executeUpdate();
+            }
+
             conn.commit();
 
             return true;
@@ -91,19 +110,6 @@ public class OVChipkaartDAOPsql implements IOVChipkaartDAO {
             conn.setAutoCommit(true);
             throw new SQLException("OVChipkaart niet geupdate", e);
         }
-    }
-
-    private void createOVChipkaart(Reiziger reiziger, List<OVChipkaart> ovChipkaarten, ResultSet resultSet)
-            throws SQLException {
-        OVChipkaart ovChipkaart = new OVChipkaart(
-            resultSet.getInt("kaart_nummer"),
-            resultSet.getDate("geldig_tot"),
-            resultSet.getInt("klasse"),
-            resultSet.getDouble("saldo"),
-            reiziger.getId()
-        );
-        reiziger.addOVChipkaart(ovChipkaart);
-        ovChipkaarten.add(ovChipkaart);
     }
 
     @Override
@@ -116,6 +122,15 @@ public class OVChipkaartDAOPsql implements IOVChipkaartDAO {
 
         preparedStatement.setInt(1, t.getKaart_nummer());
         preparedStatement.executeUpdate();
+
+        for (Product product : t.getProducten()) {
+            PreparedStatement preparedStatement2 = conn.prepareStatement(
+                "DELETE FROM ov_chipkaart_product WHERE kaart_nummer = ? AND product_nummer = ?"
+            );
+            preparedStatement2.setInt(1, t.getKaart_nummer());
+            preparedStatement2.setInt(2, product.getProduct_nummer());
+            preparedStatement2.executeUpdate();
+        }
 
         return true;
     }
@@ -136,7 +151,51 @@ public class OVChipkaartDAOPsql implements IOVChipkaartDAO {
             }
         }
 
+        for (OVChipkaart ovChipkaart : ovChipkaarten) {
+            PreparedStatement preparedStatement2 = conn.prepareStatement(
+                "SELECT * FROM ov_chipkaart_product WHERE kaart_nummer = ?"
+            );
+            preparedStatement2.setInt(1, ovChipkaart.getKaart_nummer());
+            preparedStatement2.executeQuery();
+
+            try (ResultSet resultSet2 = preparedStatement2.getResultSet()) {
+                while (resultSet2.next()) {
+                    PreparedStatement preparedStatement3 = conn.prepareStatement(
+                        "SELECT * FROM product WHERE product_nummer = ?"
+                    );
+                    preparedStatement3.setInt(1, resultSet2.getInt("product_nummer"));
+                    preparedStatement3.executeQuery();
+
+                    try (ResultSet resultSet3 = preparedStatement3.getResultSet()) {
+                        while (resultSet3.next()) {
+                            ovChipkaart.addProduct(
+                                new Product(
+                                    resultSet3.getInt("product_nummer"),
+                                    resultSet3.getString("naam"),
+                                    resultSet3.getString("beschrijving"),
+                                    resultSet3.getDouble("prijs")
+                                )
+                            );
+                        }
+                    }
+                }
+            }
+        }
+
         return ovChipkaarten;
+    }
+
+    private void createOVChipkaart(Reiziger reiziger, List<OVChipkaart> ovChipkaarten, ResultSet resultSet)
+            throws SQLException {
+        OVChipkaart ovChipkaart = new OVChipkaart(
+            resultSet.getInt("kaart_nummer"),
+            resultSet.getDate("geldig_tot"),
+            resultSet.getInt("klasse"),
+            resultSet.getDouble("saldo"),
+            reiziger.getId()
+        );
+        reiziger.addOVChipkaart(ovChipkaart);
+        ovChipkaarten.add(ovChipkaart);
     }
     
     private boolean checkIfExists(OVChipkaart ovChipkaart) throws SQLException {

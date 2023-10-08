@@ -1,6 +1,6 @@
 package dataandpersistency.P5.DAO.Interfaces;
 
-import dataandpersistency.P4.Models.Reiziger;
+import dataandpersistency.P5.Models.Reiziger;
 
 import java.sql.SQLException;
 import java.util.List;

@@ -1,11 +1,11 @@
 package dataandpersistency.P5.DAO;
 
-import dataandpersistency.P4.DAO.Interfaces.IAdresDAO;
-import dataandpersistency.P4.DAO.Interfaces.IOVChipkaartDAO;
-import dataandpersistency.P4.DAO.Interfaces.IReizigerDAO;
-import dataandpersistency.P4.Models.Adres;
-import dataandpersistency.P4.Models.OVChipkaart;
-import dataandpersistency.P4.Models.Reiziger;
+import dataandpersistency.P5.DAO.Interfaces.IAdresDAO;
+import dataandpersistency.P5.DAO.Interfaces.IOVChipkaartDAO;
+import dataandpersistency.P5.DAO.Interfaces.IReizigerDAO;
+import dataandpersistency.P5.Models.Adres;
+import dataandpersistency.P5.Models.OVChipkaart;
+import dataandpersistency.P5.Models.Reiziger;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -33,7 +33,7 @@ public class ReizigerDAOPsql implements IReizigerDAO {
 
     @Override
     public boolean save(Reiziger reiziger) throws SQLException {
-        if (!checkIfExists(reiziger)) throw new IllegalArgumentException("Reiziger bestaat al");
+        if (checkIfExists(reiziger)) throw new IllegalArgumentException("Reiziger bestaat al");
         try {
             connection.setAutoCommit(false);
             PreparedStatement preparedStatement = connection.prepareStatement(
@@ -50,7 +50,6 @@ public class ReizigerDAOPsql implements IReizigerDAO {
             for (OVChipkaart ovChipkaart : reiziger.getOVChipkaarten()) {
                 odao.save(ovChipkaart);
             }
-            // odao.save(reiziger.getOVChipkaarten());
 
             connection.commit();
             connection.setAutoCommit(true);
@@ -65,7 +64,7 @@ public class ReizigerDAOPsql implements IReizigerDAO {
 
     @Override
     public boolean update(Reiziger reiziger) throws SQLException {
-        if (checkIfExists(reiziger)) throw new IllegalArgumentException("Reiziger bestaat niet");
+        if (!checkIfExists(reiziger)) throw new IllegalArgumentException("Reiziger bestaat niet");
         try {
             connection.setAutoCommit(false);
             PreparedStatement preparedStatement = connection.prepareStatement(
@@ -82,7 +81,6 @@ public class ReizigerDAOPsql implements IReizigerDAO {
             for(OVChipkaart ovChipkaart : reiziger.getOVChipkaarten()) {
                 odao.update(ovChipkaart);
             }
-            // odao.update(reiziger.getOVChipkaarten());
 
             connection.commit();
             connection.setAutoCommit(true);
@@ -97,7 +95,6 @@ public class ReizigerDAOPsql implements IReizigerDAO {
 
     @Override
     public boolean delete(Reiziger reiziger) throws SQLException {
-        if (checkIfExists(reiziger)) return false;
         PreparedStatement preparedStatement = connection.prepareStatement(
                 "DELETE FROM reiziger WHERE reiziger_id = ?"
         );
@@ -188,12 +185,13 @@ public class ReizigerDAOPsql implements IReizigerDAO {
         preparedStatement.setInt(1, reiziger.getId());
 
         try (ResultSet resultSet = preparedStatement.executeQuery()) {
-            if (!resultSet.next()) { // If there is no next, the resultset is empty
+            if (resultSet.next())  // If there is no next, the resultset is empty
                 return true;
-            }
         }
 
         return false;
     }
+
+    
     
 }

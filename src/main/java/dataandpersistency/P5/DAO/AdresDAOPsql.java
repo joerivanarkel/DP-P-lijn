@@ -1,8 +1,8 @@
 package dataandpersistency.P5.DAO;
 
-import dataandpersistency.P4.DAO.Interfaces.IAdresDAO;
-import dataandpersistency.P4.Models.Adres;
-import dataandpersistency.P4.Models.Reiziger;
+import dataandpersistency.P5.DAO.Interfaces.IAdresDAO;
+import dataandpersistency.P5.Models.Adres;
+import dataandpersistency.P5.Models.Reiziger;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -76,8 +76,7 @@ public class AdresDAOPsql implements IAdresDAO {
 
     @Override
     public boolean delete(Adres adres) throws SQLException {
-        if (checkIfExists(adres)) throw new IllegalArgumentException("Adres bestaat niet");
-        
+
         PreparedStatement preparedStatement = conn.prepareStatement(
             "DELETE FROM adres WHERE adres_id = ?"
         );

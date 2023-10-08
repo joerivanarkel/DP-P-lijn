@@ -1,6 +1,8 @@
 package dataandpersistency.P5.Models;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 public class OVChipkaart {
     private int kaart_nummer;
@@ -8,6 +10,8 @@ public class OVChipkaart {
     private int klasse;
     private double saldo;
     private int reiziger_id;
+
+    private List<Product> producten = new ArrayList<Product>();
 
     public OVChipkaart() {
 
@@ -26,12 +30,16 @@ public class OVChipkaart {
     public int getKlasse() { return klasse; }
     public double getSaldo() { return saldo; }
     public int getReiziger_id() { return reiziger_id; }
+    public List<Product> getProducten() { return producten; }
 
     public void setKaart_nummer(int kaart_nummer) { this.kaart_nummer = kaart_nummer; }
     public void setGeldig_tot(Date geldig_tot) { this.geldig_tot = geldig_tot; }
     public void setKlasse(int klasse) { this.klasse = klasse; }
     public void setSaldo(double saldo) { this.saldo = saldo; }
     public void setReiziger_id(int reiziger_id) { this.reiziger_id = reiziger_id; }
+    public void setProducten(List<Product> producten) { this.producten = producten; }
+
+    public void addProduct(Product product) { this.producten.add(product); }
 
     @Override
     public String toString() {

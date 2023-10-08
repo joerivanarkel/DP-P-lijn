@@ -1,10 +1,15 @@
 package dataandpersistency.P5.Models;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Product {
     private int product_nummer;
     private String naam;
     private String beschrijving;
     private double prijs;
+
+    private List<OVChipkaart> ovChipkaarten = new ArrayList<OVChipkaart>();
 
     public Product() {
 
@@ -21,11 +26,14 @@ public class Product {
     public String getNaam() { return naam; }
     public String getBeschrijving() { return beschrijving; }
     public double getPrijs() { return prijs; }
+    public List<OVChipkaart> getOvChipkaarten() { return ovChipkaarten; }
 
     public void setProduct_nummer(int product_nummer) { this.product_nummer = product_nummer; }
     public void setNaam(String naam) { this.naam = naam; }
     public void setBeschrijving(String beschrijving) { this.beschrijving = beschrijving; }
     public void setPrijs(double prijs) { this.prijs = prijs; }
+
+    public void addOVChipkaart(OVChipkaart ovChipkaart) { this.ovChipkaarten.add(ovChipkaart); }
 
     @Override
     public String toString() {

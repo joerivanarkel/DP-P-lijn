@@ -1,11 +1,13 @@
 package dataandpersistency.P5;
 
-import dataandpersistency.P4.DAO.AdresDAOPsql;
-import dataandpersistency.P4.DAO.OVChipkaartDAOPsql;
-import dataandpersistency.P4.DAO.ReizigerDAOPsql;
-import dataandpersistency.P4.Models.Adres;
-import dataandpersistency.P4.Models.OVChipkaart;
-import dataandpersistency.P4.Models.Reiziger;
+import dataandpersistency.P5.DAO.AdresDAOPsql;
+import dataandpersistency.P5.DAO.OVChipkaartDAOPsql;
+import dataandpersistency.P5.DAO.ProductDAOPsql;
+import dataandpersistency.P5.DAO.ReizigerDAOPsql;
+import dataandpersistency.P5.Models.Adres;
+import dataandpersistency.P5.Models.OVChipkaart;
+import dataandpersistency.P5.Models.Product;
+import dataandpersistency.P5.Models.Reiziger;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -19,6 +21,7 @@ public class App {
     public AdresDAOPsql adao;
     public ReizigerDAOPsql rdao;
     public OVChipkaartDAOPsql odao;
+    public ProductDAOPsql pdao;
 
     public static void main(String[] args) throws SQLException {
         App app = new App();
@@ -27,6 +30,8 @@ public class App {
         app.adao = new AdresDAOPsql(app.getConnection(app.connection));
         app.rdao = new ReizigerDAOPsql(app.getConnection(app.connection));
         app.odao = new OVChipkaartDAOPsql(app.getConnection(app.connection));
+        app.pdao = new ProductDAOPsql(app.getConnection(app.connection));
+
 
         app.adao.setRdao(app.rdao);
         app.rdao.setAdao(app.adao);
@@ -37,16 +42,18 @@ public class App {
         app.testReizigerDAO(app.rdao);
         app.testAdresDAO(app.adao);
         app.testOVChipkaart(app.odao);
+        app.testProductDAO(app.pdao);
         app.connection.close();
     }
 
     public Connection getConnection(Connection connection) throws SQLException {
         if (connection != null) return connection;
         Properties props = new Properties();
-        props.setProperty("user", "postgres");
-        props.setProperty("password", "geenidee");
+        props.setProperty("user", "bep2-huland-casino");
+        props.setProperty("password", "bep2-huland-casino");
         props.setProperty("useSSL", "true");
-        connection =  DriverManager.getConnection("jdbc:postgresql://localhost/ovchip", props);
+        
+        connection =  DriverManager.getConnection("jdbc:postgresql://localhost:15432/ovchip", props);
         return connection;
     }
 
@@ -194,6 +201,56 @@ public class App {
         System.out.println(ovChipkaartDAOPsql.findByReiziger(rdao.findById(1)));
         System.out.println();
 
+    }
+
+    public void testProductDAO(ProductDAOPsql productDAOPsql) throws SQLException
+    {
+        System.out.println("\n---------- Test ProductDAO -------------");
+
+        int reizigerId = rdao.findAll().size() + 1;
+        String gbdatum = "1981-03-14";
+        Reiziger sietske = new Reiziger(reizigerId, "S", "", "Boers", Date.valueOf(gbdatum));
+        rdao.save(sietske);
+
+        int adresId = adao.findAll().size() + 1;
+        Adres adres = new Adres(adresId, "1234AB", "1", "Straat", "Woonplaats", reizigerId);
+        adao.save(adres);
+
+        int ovChipkaartId = odao.findAll().size() + 1;
+        OVChipkaart ovChipkaart = new OVChipkaart(ovChipkaartId, Date.valueOf("2020-01-01"), 1, 25.00, reizigerId);
+        odao.save(ovChipkaart);
+
+        int productId = productDAOPsql.findAll().size() + 1;
+        Product product = new Product(productId, "Product", "Product", 25.00);
+        productDAOPsql.save(product);
+
+        // Haal alle Producten op uit de database
+        List<Product> producten = productDAOPsql.findAll();
+        System.out.println("[Test] ProductDAO.findAll() geeft de volgende Producten:");
+        for (Product p : producten) {
+            System.out.println(p);
+        }
+
+        // Maak een nieuwe Product aan en persisteer deze in de database
+        int id = productDAOPsql.findAll().size() + 1;
+        Product product1 = new Product(id, "Product", "Product", 25.00);
+        System.out.print("[Test] Eerst " + producten.size() + " Producten, na ProductDAO.save() ");
+        productDAOPsql.save(product1);
+        producten = productDAOPsql.findAll();
+        System.out.println(producten.size() + " Producten\n");
+
+        // Update de nieuwe Product
+        System.out.println("[Test] ProductDAO.update() geeft de volgende Product:");
+        product1.setPrijs(50.00);
+        productDAOPsql.update(product1);
+        List<Product> producten1 = productDAOPsql.findAll();
+        System.out.println(producten1.get(producten1.size() - 1) + "\n");
+
+        // Delete de nieuwe Product
+        System.out.print("[Test] Eerst " + producten.size() + " Producten, na ProductDAO.delete() ");
+        productDAOPsql.delete(product1);
+        producten = productDAOPsql.findAll();
+        System.out.println(producten.size() + " Producten\n");
     }
 }
 
