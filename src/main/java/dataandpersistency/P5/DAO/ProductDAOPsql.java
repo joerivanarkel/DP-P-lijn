@@ -158,6 +158,28 @@ public class ProductDAOPsql implements IProductDAO {
         return products;
     }
 
+    @Override
+    public List<Product> findByOVChipkaart(OVChipkaart ovChipkaart) throws SQLException {
+        List<Product> products = new ArrayList<Product>();
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                "SELECT * FROM product WHERE product_nummer IN (SELECT product_nummer FROM ov_chipkaart_product WHERE kaart_nummer = ?)"
+        );
+        preparedStatement.setInt(1, ovChipkaart.getKaart_nummer());
+
+        try (ResultSet resultSet = preparedStatement.executeQuery()) {
+            while (resultSet.next()) {
+                products.add(new Product(
+                        resultSet.getInt("product_nummer"),
+                        resultSet.getString("naam"),
+                        resultSet.getString("beschrijving"),
+                        resultSet.getDouble("prijs")
+                ));
+            }
+        }
+
+        return products;
+    }
+
     private boolean checkIfExists(Product product) throws SQLException {
         PreparedStatement preparedStatement = connection.prepareStatement(
                 "SELECT * FROM product WHERE product_nummer = ?"
